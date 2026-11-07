@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0f1543">
+  <meta name="format-detection" content="telephone=no">
+  <title>لوحة نبضك</title>
+  <link rel="icon" href="assets/brand/emblem.png">
+  <link rel="stylesheet" href="css/fonts.css">
+  <style>
+    :root {
+      --ink:#020624; --navy:#0f1543; --plum:#2f2447; --violet:#4a3b68;
+      --steel:#58709c; --mist:#b7cddd; --lilac:#d4dafa; --snow:#f6f9fc;
+      --ar:"Noto Naskh Arabic","Urbanist",serif; --en:"Urbanist","Noto Naskh Arabic",sans-serif;
+      --beat:.77s;
+    }
+    * { box-sizing:border-box; }
+    html, body { margin:0; min-height:100%; }
+    body {
+      background: linear-gradient(160deg, var(--plum), var(--navy)) fixed;
+      background-color: var(--navy);
+      color: var(--snow);
+      font-family: var(--ar);
+      -webkit-text-size-adjust: 100%;
+    }
+    .wrap {
+      max-width: 520px; margin: 0 auto;
+      padding: max(20px, env(safe-area-inset-top)) 16px max(20px, env(safe-area-inset-bottom));
+      display: flex; flex-direction: column; gap: 18px;
+    }
+    .logo { height: 34px; width: auto; align-self: center; }
+    .frame {
+      width: 100%; aspect-ratio: 1; border-radius: 28px; overflow: hidden;
+      box-shadow: 0 24px 60px -24px var(--ink); transform: translateZ(0); background: var(--navy);
+    }
+    .frame canvas { display:block; width:100%; height:100%; }
+    .frame.alive canvas { animation: heartbeat var(--beat) ease-out infinite; }
+    @keyframes heartbeat { 0%,100%{transform:scale(1)} 14%{transform:scale(1.03)} 45%{transform:scale(1)} }
+    .card {
+      padding: 20px 22px; border-radius: 28px; background: var(--navy); border: 2px solid var(--violet);
+      display:flex; flex-direction:column; gap:6px;
+    }
+    .pulse { margin:0; display:flex; align-items:baseline; gap:12px; font-size:22px; font-weight:700; color:var(--lilac); }
+    .pulse .num { font-family:var(--en); font-size:60px; font-weight:800; line-height:1; color:var(--snow); }
+    h1 { margin:0; font-size:34px; line-height:1.35; }
+    .poem { margin:0; font-size:20px; line-height:1.6; color:var(--lilac); }
+    .line { margin:0; font-size:16px; line-height:1.6; color:var(--mist); }
+    .btn {
+      min-height: 60px; border:0; border-radius:999px; background:var(--lilac); color:var(--ink);
+      font-family:var(--ar); font-size:22px; font-weight:700; cursor:pointer;
+    }
+    .btn:disabled { opacity:.7; }
+    .note { margin:0; text-align:center; font-size:14px; color:var(--mist); }
+    .err { text-align:center; padding:60px 0; font-size:22px; color:var(--lilac); }
+    @media (prefers-reduced-motion: reduce) { .frame.alive canvas { animation:none; } }
+  </style>
+</head>
+<body>
+  <main class="wrap" id="app">
+    <img class="logo" src="assets/brand/logo.png" alt="رواد الذكاء الاصطناعي">
+    <div class="frame" id="frame" role="img" aria-label="لوحة جبال الطائف المرسومة من نبضك"></div>
+    <article class="card">
+      <p class="pulse">نبضي اليوم <bdi class="num" id="bpm"></bdi></p>
+      <h1 id="mood"></h1>
+      <p class="poem" id="poem"></p>
+      <p class="line" id="line"></p>
+    </article>
+    <button class="btn" id="save" type="button">حفظ اللوحة</button>
+    <p class="note">تجربة توعوية وليست تشخيصًا</p>
+  </main>
+
+  <script src="js/config.js"></script>
+  <script src="assets/brand/logo-data.js"></script>
+  <script src="js/artwork.js"></script>
+  <script src="js/export.js"></script>
+  <script>
+  (function (N) {
+    'use strict';
+    // الرابط: p.html#<النبض>.<البذرة> — لا شيء يُرسل أو يُحفظ
+    const m = /^#(\d{2,3})\.([0-9a-z]{1,7})$/.exec(location.hash);
+    const bpm = m ? Number(m[1]) : NaN;
+    if (!(bpm >= 40 && bpm <= 180)) {
+      document.getElementById('app').innerHTML =
+        '<img class="logo" src="assets/brand/logo.png" alt="رواد الذكاء الاصطناعي"><p class="err">ما لقينا اللوحة، صوّر الرمز مرة ثانية</p>';
+      return;
+    }
+    const seed = parseInt(m[2], 36) >>> 0;
+    const scene = N.Scene.create(bpm, seed);
+    document.getElementById('bpm').textContent = bpm;
+    document.getElementById('mood').textContent = scene.mood.name;
+    document.getElementById('poem').textContent = scene.mood.poem;
+    document.getElementById('line').textContent = scene.mood.line;
+    document.documentElement.style.setProperty('--beat', (60 / bpm).toFixed(3) + 's');
+
+    const frame = document.getElementById('frame');
+    const cv = document.createElement('canvas');
+    frame.appendChild(cv);
+    const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const t0 = performance.now();
+    const paint = now => {
+      const w = cv.clientWidth;
+      if (w) {
+        const px = Math.round(w * Math.min(2, devicePixelRatio || 1));
+        if (cv.width !== px) { cv.width = px; cv.height = px; }
+        cv.getContext('2d').save();
+        scene.render(cv.getContext('2d'), px, scene.doneAt + (still ? 0 : (now - t0) / 1000), true);
+        cv.getContext('2d').restore();
+      }
+      if (!still) requestAnimationFrame(paint);
+    };
+    requestAnimationFrame(paint);
+    if (!still) frame.classList.add('alive');
+    if (still) {
+      addEventListener('resize', () => requestAnimationFrame(paint));
+      N.Scene.preload().then(() => requestAnimationFrame(paint));
+    } else N.Scene.preload();
+
+    const btn = document.getElementById('save');
+    btn.addEventListener('click', async () => {
+      btn.disabled = true;
+      const label = btn.textContent;
+      btn.textContent = 'نجهّز الصورة…';
+      try {
+        await N.Export.save({ scene, bpm, mood: scene.mood, time: scene.doneAt + (performance.now() - t0) / 1000 });
+      } catch (e) { /* يقدر يعيد المحاولة */ }
+      btn.disabled = false;
+      btn.textContent = label;
+    });
+  })(window.Nabdak);
+  </script>
+</body>
+</html>

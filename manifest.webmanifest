@@ -1,0 +1,15 @@
+{
+  "name": "لوحة نبضك",
+  "short_name": "لوحة نبضك",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#0f1543",
+  "theme_color": "#0f1543",
+  "icons": [
+    { "src": "assets/brand/emblem.png", "sizes": "976x791", "type": "image/png" }
+  ]
+}

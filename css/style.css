@@ -1,0 +1,670 @@
+/* =========================================================
+   لوحة نبضك — رواد الذكاء الاصطناعي · نقلة · Human & Impact
+   ========================================================= */
+:root {
+  --ink: #020624;
+  --navy: #0f1543;
+  --plum: #2f2447;
+  --violet: #4a3b68;
+  --steel: #58709c;
+  --mist: #b7cddd;
+  --lilac: #d4dafa;
+  --snow: #f6f9fc;
+
+  --ar: "Noto Naskh Arabic", "Urbanist", serif;
+  --en: "Urbanist", "Noto Naskh Arabic", sans-serif;
+
+  --top: clamp(84px, 11vh, 112px);
+  --bottom: clamp(48px, 7vh, 64px);
+  --side: clamp(28px, 4vw, 64px);
+
+  --ease: cubic-bezier(.22, .8, .24, 1);
+  --t-screen: .7s;
+  --beat: 0.77s;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+body {
+  background: linear-gradient(160deg, var(--plum) 0%, var(--navy) 100%);
+  background-color: var(--navy);
+  color: var(--snow);
+  font-family: var(--ar);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  touch-action: manipulation;
+}
+
+img { -webkit-user-drag: none; }
+button { font: inherit; color: inherit; touch-action: manipulation; }
+.num { font-family: var(--en); font-variant-numeric: lining-nums tabular-nums; }
+
+/* ---------- زخرفة الخلفية ---------- */
+.deco {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+.deco circle, .deco rect {
+  fill: none;
+  stroke: var(--violet);
+  stroke-width: 2;
+}
+.deco .fill { fill: var(--violet); stroke: none; }
+.deco-a { animation: drift 18s ease-in-out infinite alternate; }
+.deco-b { animation: drift 22s ease-in-out -6s infinite alternate-reverse; }
+.deco-c { animation: drift 16s ease-in-out -3s infinite alternate; }
+@keyframes drift {
+  from { transform: translate(0, 0); }
+  to   { transform: translate(-14px, 10px); }
+}
+
+/* ---------- الشريط العلوي والتذييل ---------- */
+.topbar {
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: var(--top);
+  padding: 0 var(--side);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 5;
+  pointer-events: none;
+}
+.logo {
+  height: clamp(34px, 5vh, 48px);
+  width: auto;
+  display: block;
+}
+.zone {
+  font-family: var(--en);
+  font-weight: 600;
+  font-size: clamp(14px, 1.5vw, 18px);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--mist);
+  padding: 8px 18px;
+  border: 1.5px solid var(--violet);
+  border-radius: 999px;
+}
+
+.disclaimer {
+  position: fixed;
+  inset: auto 0 0 0;
+  height: var(--bottom);
+  display: grid;
+  place-items: center;
+  font-size: clamp(14px, 1.5vw, 18px);
+  color: var(--mist);
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* ---------- الشاشات ---------- */
+main { position: relative; z-index: 1; }
+
+.screen {
+  position: fixed;
+  inset: 0;
+  padding: var(--top) var(--side) var(--bottom);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(18px) scale(.995);
+  transition:
+    opacity var(--t-screen) var(--ease),
+    transform var(--t-screen) var(--ease),
+    visibility 0s linear var(--t-screen);
+}
+.screen.active {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition-delay: .12s, .12s, 0s;
+}
+
+.h2 {
+  font-weight: 700;
+  font-size: clamp(30px, 3.6vw, 46px);
+  line-height: 1.3;
+  margin: 0;
+  color: var(--snow);
+}
+
+/* ---------- الأزرار ---------- */
+.btn {
+  position: relative;
+  overflow: hidden;
+  border: 0;
+  border-radius: 999px;
+  min-height: clamp(68px, 9.5vh, 92px);
+  padding: 0 clamp(36px, 4vw, 60px);
+  font-family: var(--ar);
+  font-weight: 700;
+  font-size: clamp(24px, 2.5vw, 32px);
+  line-height: 1;
+  cursor: pointer;
+  transition: transform .18s var(--ease), background-color .25s, color .25s, border-color .25s, opacity .25s;
+}
+.btn:active:not(:disabled) { transform: scale(.96); }
+.btn:focus-visible, .key:focus-visible { outline: 3px solid var(--lilac); outline-offset: 4px; }
+
+.btn-primary { background: var(--lilac); color: var(--ink); }
+.btn-primary:active:not(:disabled) { background: var(--snow); }
+.btn-primary:disabled {
+  background: var(--violet);
+  color: var(--mist);
+  cursor: default;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--snow);
+  border: 2px solid var(--steel);
+}
+.btn-ghost:active { background: var(--violet); }
+
+.btn-xl {
+  min-height: clamp(84px, 12vh, 112px);
+  min-width: clamp(240px, 26vw, 340px);
+  font-size: clamp(32px, 3.4vw, 44px);
+}
+.btn-sm {
+  min-height: 60px;
+  font-size: 22px;
+  padding: 0 34px;
+}
+.btn-block { width: 100%; }
+
+/* ---------- ١. الترحيب ---------- */
+.welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: clamp(10px, 2vh, 22px);
+  max-width: 900px;
+}
+.welcome-mark {
+  position: relative;
+  width: clamp(120px, 18vh, 170px);
+  aspect-ratio: 1;
+  margin-bottom: clamp(4px, 1vh, 12px);
+}
+.welcome-mark .ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--steel);
+  animation: breathe calc(var(--beat) * 1) var(--ease) infinite;
+}
+.welcome-mark .r2 { inset: 16%; border-color: var(--mist); animation-delay: .1s; }
+.welcome-mark .r3 { inset: 32%; border-color: var(--lilac); animation-delay: .2s; }
+.welcome-mark .core {
+  position: absolute;
+  inset: 42%;
+  border-radius: 50%;
+  background: var(--snow);
+  animation: beat var(--beat) ease-out infinite;
+}
+@keyframes breathe {
+  0%, 100% { transform: scale(1); }
+  14% { transform: scale(1.06); }
+  40% { transform: scale(1); }
+}
+@keyframes beat {
+  0%, 100% { transform: scale(1); }
+  12% { transform: scale(1.35); }
+  30% { transform: scale(.95); }
+  45% { transform: scale(1.12); }
+  65% { transform: scale(1); }
+}
+
+.title {
+  margin: 0;
+  font-weight: 700;
+  font-size: clamp(64px, 9vw, 124px);
+  line-height: 1.15;
+  color: var(--snow);
+}
+.question {
+  margin: 0 0 clamp(10px, 2.5vh, 28px);
+  font-size: clamp(26px, 3vw, 40px);
+  color: var(--lilac);
+}
+.tagline {
+  margin: clamp(8px, 2vh, 20px) 0 0;
+  max-width: 620px;
+  font-size: clamp(16px, 1.7vw, 21px);
+  line-height: 1.9;
+  color: var(--mist);
+}
+
+/* ---------- ٢. القياس ---------- */
+.measure {
+  width: 100%;
+  max-width: 1240px;
+  height: 100%;
+  display: grid;
+  grid-template-columns: 1fr minmax(340px, 0.9fr);
+  gap: clamp(28px, 5vw, 80px);
+  align-items: center;
+}
+.guide {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(10px, 2.2vh, 24px);
+  min-height: 0;
+}
+.oximeter {
+  width: 100%;
+  max-width: 460px;
+  max-height: 34vh;
+  align-self: center;
+}
+.ox-body   { fill: var(--navy); stroke: var(--steel); stroke-width: 3; }
+.ox-top    { fill: var(--plum); stroke: var(--steel); stroke-width: 3; }
+.ox-hinge  { fill: var(--violet); stroke: var(--steel); stroke-width: 3; }
+.ox-screen { fill: var(--ink); }
+.ox-ecg {
+  fill: none;
+  stroke: var(--mist);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 160;
+  stroke-dashoffset: 160;
+}
+.ox-led { fill: var(--violet); }
+.finger { fill: var(--mist); }
+.nail   { fill: var(--lilac); stroke: var(--steel); stroke-width: 1.5; }
+.knuckle { fill: var(--steel); }
+
+.ox-lid {
+  transform-box: view-box;
+  transform-origin: 94px 160px;
+  animation: lid 5s var(--ease) infinite;
+}
+.ox-finger { animation: finger 5s var(--ease) infinite; }
+.ox-ecg    { animation: ecgline 5s linear infinite; }
+.ox-led    { animation: led 5s linear infinite; }
+
+@keyframes lid {
+  0%, 8%   { transform: rotate(0deg); }
+  20%, 50% { transform: rotate(-20deg); }
+  60%, 92% { transform: rotate(0deg); }
+  100%     { transform: rotate(0deg); }
+}
+@keyframes finger {
+  0%, 18%  { transform: translateX(320px); }
+  48%, 90% { transform: translateX(0); }
+  100%     { transform: translateX(320px); }
+}
+@keyframes ecgline {
+  0%, 62%  { stroke-dashoffset: 160; }
+  82%, 92% { stroke-dashoffset: 0; }
+  100%     { stroke-dashoffset: 0; opacity: 0; }
+}
+@keyframes led {
+  0%, 62%  { fill: var(--violet); }
+  66%, 92% { fill: var(--lilac); }
+  100%     { fill: var(--violet); }
+}
+
+.steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: clamp(8px, 1.6vh, 16px);
+}
+.steps li {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: clamp(20px, 2.1vw, 27px);
+  color: var(--lilac);
+}
+.steps .n {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-family: var(--en);
+  font-weight: 800;
+  font-size: 20px;
+  color: var(--ink);
+  background: var(--mist);
+}
+
+.entry {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(10px, 1.8vh, 18px);
+  min-height: 0;
+}
+.readout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: clamp(8px, 1.4vh, 16px) 20px clamp(10px, 1.6vh, 18px);
+  border-radius: 32px;
+  background: var(--navy);
+  border: 2px solid var(--violet);
+  transition: border-color .3s;
+}
+.readout-label { font-size: clamp(17px, 1.7vw, 21px); color: var(--mist); }
+.readout-num {
+  font-family: var(--en);
+  font-weight: 800;
+  font-size: clamp(64px, 11vh, 108px);
+  line-height: 1.05;
+  letter-spacing: .02em;
+  color: var(--snow);
+  min-height: 1.05em;
+}
+.readout-hint {
+  font-size: clamp(16px, 1.6vw, 20px);
+  color: var(--mist);
+  min-height: 1.6em;
+}
+.readout.valid { border-color: var(--mist); }
+.readout.invalid { border-color: var(--lilac); }
+.readout.invalid .readout-hint { color: var(--lilac); font-weight: 700; }
+.readout.shake { animation: shake .42s var(--ease); }
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-10px); }
+  40% { transform: translateX(9px); }
+  60% { transform: translateX(-6px); }
+  80% { transform: translateX(4px); }
+}
+
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(8px, 1.2vh, 14px);
+}
+.key {
+  height: clamp(58px, 8.4vh, 86px);
+  border-radius: 24px;
+  border: 2px solid var(--violet);
+  background: var(--navy);
+  font-family: var(--en);
+  font-weight: 600;
+  font-size: clamp(30px, 4.4vh, 42px);
+  color: var(--snow);
+  cursor: pointer;
+  transition: transform .12s var(--ease), background-color .2s, border-color .2s;
+}
+.key:active { transform: scale(.94); background: var(--violet); border-color: var(--mist); }
+.key-fn {
+  font-family: var(--ar);
+  font-size: clamp(20px, 2.8vh, 26px);
+  font-weight: 700;
+  color: var(--mist);
+  background: transparent;
+}
+.key-fn svg { width: 44px; height: 30px; display: block; margin: auto; }
+.key-fn svg path { fill: none; stroke: var(--mist); stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
+
+/* ---------- ٣. الرسم ---------- */
+.drawing {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(6px, 1.4vh, 14px);
+  text-align: center;
+}
+.draw-bpm {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: clamp(20px, 2.2vw, 28px);
+  color: var(--mist);
+}
+.draw-bpm .num { font-weight: 800; color: var(--snow); font-size: 1.3em; }
+
+.stage {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+}
+.live-frame {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: 100%;
+  aspect-ratio: 1;
+  max-width: 100%;
+  translate: -50% -50%;
+  border-radius: 40px;
+  overflow: hidden;
+  box-shadow: 0 30px 80px -30px var(--ink);
+}
+.live-frame canvas, .art-frame canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 40px;
+}
+
+.status {
+  margin: 0;
+  min-height: 1.8em;
+  font-size: clamp(20px, 2.2vw, 28px);
+  color: var(--lilac);
+  transition: opacity .35s;
+}
+.status.fade { opacity: 0; }
+
+/* ---------- ٤. اللوحة ----------
+   عمودين ثابتين: اللوحة 70% والبطاقة 30% — ما يتداخلون على أي مقاس */
+.result {
+  width: 100%;
+  height: 100%;
+  max-width: 1320px;
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 3fr);
+  grid-template-rows: minmax(0, 1fr);
+  column-gap: clamp(24px, 3.6vw, 48px);
+  align-items: center;
+}
+.art-cell {
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  container-type: size;
+  display: grid;
+  place-items: center;
+}
+.art-frame {
+  width: 100%;
+  max-height: 100%;
+  width: min(100cqw, 100cqh);
+  aspect-ratio: 1;
+  border-radius: 40px;
+  box-shadow: 0 30px 80px -30px var(--ink);
+  overflow: hidden;
+  transform: translateZ(0);          /* يضمن القص داخل الزوايا الدائرية في سفاري */
+}
+.art-frame canvas { border-radius: 0; }
+.live-frame { transform: translateZ(0); }
+.live-frame canvas { border-radius: 0; }
+
+/* بعد ما تكتمل اللوحة: الرسمة تنبض داخل إطارها الثابت بعدد نبضات الزائر */
+.art-frame.alive canvas,
+.live-frame.alive canvas {
+  transform-origin: 50% 50%;
+  animation: heartbeat var(--beat) ease-out infinite;
+}
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  14% { transform: scale(1.03); }
+  45% { transform: scale(1); }
+}
+
+.side {
+  min-width: 0;
+  max-height: 100%;
+  justify-content: center;
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(10px, 1.8vh, 18px);
+}
+.card {
+  min-height: 0;
+  padding: clamp(14px, 2.4vh, 26px) clamp(14px, 9cqi, 28px);
+  border-radius: 32px;
+  background: var(--navy);
+  border: 2px solid var(--violet);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(4px, 1vh, 10px);
+  overflow: hidden;
+}
+.card-logo {
+  height: clamp(24px, 3.6vh, 36px);
+  max-width: 100%;
+  width: auto;
+  object-fit: contain;
+  align-self: flex-start;
+  margin-bottom: clamp(2px, 0.8vh, 8px);
+}
+.card-pulse {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 12px;
+  font-size: clamp(18px, 8cqi, 28px);
+  font-weight: 700;
+  color: var(--lilac);
+}
+.card-pulse .num {
+  font-size: clamp(44px, min(24cqi, 9vh), 80px);
+  font-weight: 800;
+  line-height: 1;
+  color: var(--snow);
+}
+.card-mood {
+  margin: 0;
+  font-size: clamp(24px, min(13cqi, 5.4vh), 42px);
+  line-height: 1.35;
+  font-weight: 700;
+  color: var(--snow);
+}
+.card-poem {
+  margin: 0;
+  font-size: clamp(16px, min(7.4cqi, 2.8vh), 23px);
+  line-height: 1.6;
+  color: var(--lilac);
+}
+.card-line {
+  margin: 0;
+  font-size: clamp(13px, min(5.6cqi, 2.1vh), 17px);
+  line-height: 1.6;
+  color: var(--mist);
+  opacity: .85;
+}
+.qr {
+  margin-top: clamp(4px, 1.2vh, 12px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.qr-code {
+  width: min(100%, 21vh, 190px);
+  aspect-ratio: 1;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--snow);
+}
+.qr-code svg { display: block; width: 100%; height: 100%; }
+.qr-label {
+  margin: 0;
+  text-align: center;
+  font-size: clamp(14px, min(6cqi, 2.2vh), 18px);
+  line-height: 1.6;
+  color: var(--lilac);
+}
+.side .btn-block {
+  flex: none;
+  white-space: nowrap;
+  font-size: clamp(20px, 9cqi, 28px);
+}
+.idle-bar {
+  position: absolute;
+  inset: auto 0 0 auto;
+  height: 4px;
+  width: 0%;
+  background: var(--mist);
+  border-radius: 2px;
+}
+
+/* ---------- رسالة مؤقتة ---------- */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--bottom) + 12px);
+  translate: -50% 20px;
+  padding: 14px 28px;
+  border-radius: 999px;
+  background: var(--lilac);
+  color: var(--ink);
+  font-size: 20px;
+  font-weight: 700;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 10;
+  transition: opacity .3s, translate .4s var(--ease);
+}
+.toast.show { opacity: 1; translate: -50% 0; }
+
+/* ---------- آيباد بوضع أصغر ---------- */
+@media (max-height: 700px) {
+  .tagline { display: none; }
+  .steps li { font-size: 19px; }
+  .oximeter { max-height: 28vh; }
+}
+
+/* ---------- احترام تقليل الحركة ---------- */
+@media (prefers-reduced-motion: reduce) {
+  :root { --t-screen: .25s; }
+  .screen { transform: none; }
+  .deco g,
+  .welcome-mark .ring,
+  .welcome-mark .core,
+  .art-frame.alive canvas,
+  .live-frame.alive canvas,
+  .ox-lid, .ox-finger, .ox-led,
+  .readout.shake { animation: none !important; }
+  .ox-finger { transform: none; }
+  .ox-ecg { animation: none; stroke-dashoffset: 0; }
+  .ox-led { fill: var(--lilac); }
+  .btn, .key { transition: none; }
+}

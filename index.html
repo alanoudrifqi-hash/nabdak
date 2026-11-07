@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="لوحة نبضك">
+  <meta name="theme-color" content="#0f1543">
+  <meta name="format-detection" content="telephone=no">
+  <title>لوحة نبضك</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="assets/brand/emblem.png">
+  <link rel="stylesheet" href="css/fonts.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-screen="welcome">
+
+  <!-- زخرفة الهوية: دوائر وكبسولات متصلة -->
+  <svg class="deco" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <g class="deco-a">
+      <circle cx="80" cy="640" r="150" />
+      <circle cx="80" cy="640" r="96" />
+      <rect x="150" y="704" width="260" height="64" rx="32" />
+      <circle cx="450" cy="736" r="20" class="fill" />
+    </g>
+    <g class="deco-b">
+      <circle cx="1130" cy="150" r="120" />
+      <rect x="820" y="40" width="220" height="56" rx="28" />
+      <circle cx="790" cy="68" r="14" class="fill" />
+      <rect x="980" y="300" width="56" height="190" rx="28" />
+    </g>
+    <g class="deco-c">
+      <circle cx="1110" cy="690" r="46" />
+      <rect x="880" y="664" width="180" height="52" rx="26" />
+    </g>
+  </svg>
+
+  <header class="topbar">
+    <img class="logo" src="assets/brand/logo.png" alt="رواد الذكاء الاصطناعي">
+    <span class="zone" lang="en" dir="ltr">Human &amp; Impact</span>
+  </header>
+
+  <main>
+    <!-- ١. الترحيب -->
+    <section class="screen active" id="welcome" aria-labelledby="w-title">
+      <div class="welcome">
+        <div class="welcome-mark" aria-hidden="true">
+          <span class="ring r1"></span><span class="ring r2"></span><span class="ring r3"></span>
+          <span class="core"></span>
+        </div>
+        <h1 id="w-title" class="title">لوحة نبضك</h1>
+        <p class="question">وش شكل قلبك لو صار لوحة؟</p>
+        <button class="btn btn-primary btn-xl" id="startBtn" type="button">ابدأ</button>
+        <p class="tagline">كل قلب له إيقاعه… والذكاء الاصطناعي يقدر يحوّل بيانات جسمك إلى شيء تفهمه وتحس فيه</p>
+      </div>
+    </section>
+
+    <!-- ٢. القياس -->
+    <section class="screen" id="measure" aria-labelledby="m-title" aria-hidden="true">
+      <div class="measure">
+        <div class="guide">
+          <h2 id="m-title" class="h2">قِس نبضك</h2>
+
+          <svg class="oximeter" viewBox="0 0 420 330" role="img" aria-label="إصبع يدخل في جهاز قياس النبض">
+            <defs>
+              <clipPath id="oxClip"><rect x="0" y="0" width="420" height="330" /></clipPath>
+            </defs>
+            <g clip-path="url(#oxClip)">
+              <!-- جسم الجهاز -->
+              <rect class="ox-body" x="70" y="196" width="230" height="96" rx="48" />
+              <rect class="ox-screen" x="118" y="226" width="134" height="40" rx="20" />
+              <polyline class="ox-ecg" points="130,246 152,246 160,236 168,258 176,232 184,246 206,246 214,240 222,246 240,246" />
+              <!-- الإصبع -->
+              <g class="ox-finger">
+                <rect class="finger" x="104" y="150" width="360" height="48" rx="24" />
+                <rect class="nail" x="112" y="156" width="34" height="22" rx="11" />
+                <rect class="knuckle" x="236" y="166" width="4" height="18" rx="2" />
+              </g>
+              <!-- الغطاء العلوي -->
+              <g class="ox-lid">
+                <rect class="ox-top" x="70" y="102" width="230" height="50" rx="25" />
+                <circle class="ox-hinge" cx="94" cy="160" r="12" />
+              </g>
+              <circle class="ox-led" cx="270" cy="246" r="7" />
+            </g>
+          </svg>
+
+          <ol class="steps">
+            <li><span class="n">1</span>دخّل إصبعك في جهاز القياس</li>
+            <li><span class="n">2</span>خلّ يدك ثابتة وتنفّس براحة</li>
+            <li><span class="n">3</span>اكتب الرقم اللي يطلع لك</li>
+          </ol>
+
+          <button class="btn btn-ghost btn-sm" id="backBtn" type="button">رجوع</button>
+        </div>
+
+        <div class="entry">
+          <div class="readout" aria-live="polite">
+            <span class="readout-label">نبضك الحين</span>
+            <output class="readout-num" id="readout" dir="ltr">—</output>
+            <span class="readout-hint" id="hint">اكتب رقم من 40 إلى 180</span>
+          </div>
+
+          <div class="keypad" dir="ltr" role="group" aria-label="لوحة الأرقام">
+            <button type="button" class="key" data-key="1">1</button>
+            <button type="button" class="key" data-key="2">2</button>
+            <button type="button" class="key" data-key="3">3</button>
+            <button type="button" class="key" data-key="4">4</button>
+            <button type="button" class="key" data-key="5">5</button>
+            <button type="button" class="key" data-key="6">6</button>
+            <button type="button" class="key" data-key="7">7</button>
+            <button type="button" class="key" data-key="8">8</button>
+            <button type="button" class="key" data-key="9">9</button>
+            <button type="button" class="key key-fn" data-key="clear" dir="rtl">مسح</button>
+            <button type="button" class="key" data-key="0">0</button>
+            <button type="button" class="key key-fn" data-key="del" aria-label="حذف آخر رقم">
+              <svg viewBox="0 0 48 32" aria-hidden="true"><path d="M16 3h26a4 4 0 0 1 4 4v18a4 4 0 0 1-4 4H16L3 16z" /><path d="M24 11l10 10M34 11L24 21" /></svg>
+            </button>
+          </div>
+
+          <button class="btn btn-primary btn-block" id="drawBtn" type="button" disabled>ارسم نبضي</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ٣. الذكاء الاصطناعي يرسم نبضك -->
+    <section class="screen" id="drawing" aria-labelledby="d-title" aria-hidden="true">
+      <div class="drawing">
+        <h2 id="d-title" class="h2">الذكاء الاصطناعي يرسم نبضك</h2>
+        <p class="draw-bpm"><bdi class="num" id="drawBpm">78</bdi> نبضة في الدقيقة</p>
+        <div class="stage" id="stage">
+          <div class="live-frame" id="liveFrame" aria-hidden="true"></div>
+        </div>
+        <p class="status" id="status" aria-live="polite">نقرأ إيقاعك…</p>
+      </div>
+    </section>
+
+    <!-- ٤. اللوحة -->
+    <section class="screen" id="result" aria-labelledby="r-mood" aria-hidden="true">
+      <div class="result">
+        <div class="art-cell">
+          <div class="art-frame" id="artFrame" role="img" aria-label="لوحة جبال الطائف المرسومة من نبضك"></div>
+        </div>
+
+        <div class="side">
+          <article class="card">
+            <img class="card-logo" src="assets/brand/logo.png" alt="رواد الذكاء الاصطناعي">
+            <p class="card-pulse">نبضي اليوم <bdi class="num" id="cardBpm">78</bdi></p>
+            <h2 class="card-mood" id="r-mood">نسيم الشفا</h2>
+            <p class="card-poem" id="r-poem">قلبك هادي مثل ليل الهدا</p>
+            <p class="card-line" id="r-line">قمم هذي الجبال مرسومة من نبضات قلبك</p>
+            <div class="qr">
+              <div class="qr-code" id="qrCode" role="img" aria-label="رمز QR لفتح لوحتك على جوالك"></div>
+              <p class="qr-label">صوّر الرمز بكاميرا جوالك<br>وخذ لوحتك معك</p>
+            </div>
+          </article>
+
+          <button class="btn btn-ghost btn-block" id="newBtn" type="button">زائر جديد<span class="idle-bar" id="idleBar" aria-hidden="true"></span></button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="disclaimer">تجربة توعوية وليست تشخيصًا</footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/artwork.js"></script>
+  <script src="js/qr.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
