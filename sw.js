@@ -1,5 +1,5 @@
 /* يخزّن ملفات التجربة لتشتغل بدون إنترنت بعد أول فتح */
-const CACHE = 'nabdak-v5';
+const CACHE = 'nabdak-v6-naqla';
 const FILES = [
   './',
   'index.html',
@@ -8,18 +8,21 @@ const FILES = [
   'css/fonts.css',
   'css/style.css',
   'js/config.js',
+  'js/water.js',
   'js/artwork.js',
   'js/qr.js',
   'js/export.js',
   'js/app.js',
-  'assets/brand/logo.png',
+  'assets/brand/naqla-white.svg',
+  'assets/brand/naqla-white.png',
+  'assets/brand/rowad-white.png',
   'assets/brand/logo-data.js',
-  'assets/brand/emblem.png',
-  'assets/fonts/noto-naskh-arabic-arabic-400-normal.woff2',
-  'assets/fonts/noto-naskh-arabic-arabic-700-normal.woff2',
-  'assets/fonts/urbanist-latin-400-normal.woff2',
-  'assets/fonts/urbanist-latin-600-normal.woff2',
-  'assets/fonts/urbanist-latin-800-normal.woff2'
+  'assets/icons/icon-192.png',
+  'assets/icons/icon-512.png',
+  'assets/icons/apple-touch-icon.png',
+  'assets/fonts/thmanyahsans-light.woff2',
+  'assets/fonts/thmanyahsans-regular.woff2',
+  'assets/fonts/thmanyahsans-medium.woff2'
 ];
 
 // خلفيات المزاج: نخزن الموجود منها بأي صيغة (ما نوقف التثبيت لو ناقص)

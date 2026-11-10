@@ -34,7 +34,27 @@
     current = id;
     document.body.dataset.screen = id;
     lastTouch = Date.now();
+    syncWater();
   }
+
+  // ---------- خلفية التموج (هوية نقلة) ----------
+  // تشتغل في الترحيب والقياس، وتوقف أثناء رسم اللوحة وعرضها عشان الآيباد يركّز على اللوحة.
+  const waterBtn = $('#waterToggle');
+  let waterOn = false;
+  function syncWater() {
+    if (!waterOn || !waterBtn) return;
+    const wantPaused = current === 'drawing' || current === 'result';
+    const isPaused = waterBtn.getAttribute('aria-pressed') === 'true';
+    if (wantPaused !== isPaused && !(reduced.matches && !wantPaused)) waterBtn.click();
+  }
+  try {
+    const cv = $('#water');
+    if (cv && window.NaqlaTheme && NaqlaTheme.mountWater) {
+      const dispose = NaqlaTheme.mountWater(cv, waterBtn);
+      waterOn = true;
+      window.addEventListener('pagehide', dispose, { once: true });
+    }
+  } catch (e) { /* يبقى التدرج */ }
 
   function reset() {
     cancelAnimationFrame(raf);
@@ -193,7 +213,7 @@
 
   function renderQR(s) {
     try {
-      els.qr.innerHTML = N.QR.svg(shareLink(s), '#020624', '#f6f9fc');
+      els.qr.innerHTML = N.QR.svg(shareLink(s), '#01141B', '#F4F5F4');
     } catch (e) {
       els.qr.replaceChildren();
     }

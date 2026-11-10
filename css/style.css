@@ -1,24 +1,39 @@
 /* =========================================================
    لوحة نبضك — رواد الذكاء الاصطناعي · نقلة · Human & Impact
+   الهوية: NAQLA THEME KIT v1.0
    ========================================================= */
 :root {
-  --ink: #020624;
-  --navy: #0f1543;
-  --plum: #2f2447;
-  --violet: #4a3b68;
-  --steel: #58709c;
-  --mist: #b7cddd;
-  --lilac: #d4dafa;
-  --snow: #f6f9fc;
+  /* ألوان نقلة الست (يقرأها محرك التموج js/water.js) */
+  --brand-deep:   #01141B;
+  --brand-ink:    #012535;
+  --brand-blue:   #2F7BAA;
+  --brand-silver: #C0C9CE;
+  --brand-paper:  #F4F5F4;
+  --brand-cyan:   #7ECEEC;
 
-  --ar: "Noto Naskh Arabic", "Urbanist", serif;
-  --en: "Urbanist", "Noto Naskh Arabic", sans-serif;
+  /* أسماء الموقع القديمة مربوطة بألوان نقلة */
+  --ink: var(--brand-deep);
+  --navy: var(--brand-ink);
+  --plum: var(--brand-deep);
+  --violet: rgba(192, 201, 206, 0.28);   /* حدود فضية شفافة */
+  --steel: var(--brand-blue);
+  --mist: var(--brand-silver);
+  --lilac: var(--brand-cyan);
+  --snow: var(--brand-paper);
+
+  /* زجاج نقلة */
+  --glass-bg: rgba(255, 255, 255, 0.08);
+  --glass-border: rgba(255, 255, 255, 0.22);
+
+  --ar: "Thmanyah", Tahoma, sans-serif;
+  --en: "Thmanyah", Arial, sans-serif;
+  --num: Arial, Helvetica, sans-serif;
 
   --top: clamp(84px, 11vh, 112px);
   --bottom: clamp(48px, 7vh, 64px);
   --side: clamp(28px, 4vw, 64px);
 
-  --ease: cubic-bezier(.22, .8, .24, 1);
+  --ease: cubic-bezier(.22, 1, .36, 1);
   --t-screen: .7s;
   --beat: 0.77s;
 }
@@ -33,8 +48,10 @@ html, body {
 }
 
 body {
-  background: linear-gradient(160deg, var(--plum) 0%, var(--navy) 100%);
-  background-color: var(--navy);
+  /* لو WebGL ما اشتغل يبقى هذا التدرج */
+  background: radial-gradient(ellipse at 20% 25%, rgba(47, 123, 170, 0.44), transparent 65%), var(--brand-deep);
+  background-color: var(--brand-deep);
+  font-synthesis: none;
   color: var(--snow);
   font-family: var(--ar);
   -webkit-font-smoothing: antialiased;
@@ -47,30 +64,30 @@ body {
 
 img { -webkit-user-drag: none; }
 button { font: inherit; color: inherit; touch-action: manipulation; }
-.num { font-family: var(--en); font-variant-numeric: lining-nums tabular-nums; }
+.num { font-family: var(--num); font-variant-numeric: lining-nums tabular-nums; }
 
-/* ---------- زخرفة الخلفية ---------- */
-.deco {
+/* ---------- خلفية التموج (محرك نقلة js/water.js) ----------
+   كاملة في الترحيب، ومعتّمة أكثر في باقي الشاشات عشان النص واللوحة يبرزون */
+.water {
   position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  isolation: isolate;
+  pointer-events: none;
+}
+.water canvas, .water .shade {
+  position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  pointer-events: none;
-  z-index: 0;
 }
-.deco circle, .deco rect {
-  fill: none;
-  stroke: var(--violet);
-  stroke-width: 2;
+.water canvas { opacity: .8; }
+.water .shade {
+  background: linear-gradient(180deg, rgba(1, 20, 27, .25), rgba(1, 20, 27, .15) 35%, rgba(1, 20, 27, .75));
+  transition: background-color .9s var(--ease);
 }
-.deco .fill { fill: var(--violet); stroke: none; }
-.deco-a { animation: drift 18s ease-in-out infinite alternate; }
-.deco-b { animation: drift 22s ease-in-out -6s infinite alternate-reverse; }
-.deco-c { animation: drift 16s ease-in-out -3s infinite alternate; }
-@keyframes drift {
-  from { transform: translate(0, 0); }
-  to   { transform: translate(-14px, 10px); }
-}
+body:not([data-screen="welcome"]) .water .shade { background-color: rgba(1, 20, 27, .5); }
 
 /* ---------- الشريط العلوي والتذييل ---------- */
 .topbar {
@@ -88,17 +105,21 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
   height: clamp(34px, 5vh, 48px);
   width: auto;
   display: block;
+  object-fit: contain;
 }
 .zone {
   font-family: var(--en);
-  font-weight: 600;
+  font-weight: 500;
   font-size: clamp(14px, 1.5vw, 18px);
   letter-spacing: .14em;
   text-transform: uppercase;
   color: var(--mist);
   padding: 8px 18px;
-  border: 1.5px solid var(--violet);
+  border: 1px solid rgba(192, 201, 206, 0.45);
   border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
 }
 
 .disclaimer {
@@ -139,7 +160,7 @@ main { position: relative; z-index: 1; }
 }
 
 .h2 {
-  font-weight: 700;
+  font-weight: 500;
   font-size: clamp(30px, 3.6vw, 46px);
   line-height: 1.3;
   margin: 0;
@@ -155,29 +176,32 @@ main { position: relative; z-index: 1; }
   min-height: clamp(68px, 9.5vh, 92px);
   padding: 0 clamp(36px, 4vw, 60px);
   font-family: var(--ar);
-  font-weight: 700;
+  font-weight: 500;
   font-size: clamp(24px, 2.5vw, 32px);
   line-height: 1;
   cursor: pointer;
   transition: transform .18s var(--ease), background-color .25s, color .25s, border-color .25s, opacity .25s;
 }
 .btn:active:not(:disabled) { transform: scale(.96); }
-.btn:focus-visible, .key:focus-visible { outline: 3px solid var(--lilac); outline-offset: 4px; }
+.btn:focus-visible, .key:focus-visible { outline: 3px solid var(--brand-cyan); outline-offset: 4px; }
 
-.btn-primary { background: var(--lilac); color: var(--ink); }
-.btn-primary:active:not(:disabled) { background: var(--snow); }
+.btn-primary { background: var(--brand-paper); color: var(--brand-ink); box-shadow: 0 10px 40px rgba(1, 20, 27, .35); }
+.btn-primary:active:not(:disabled) { background: #ffffff; }
 .btn-primary:disabled {
-  background: var(--violet);
+  background: rgba(255, 255, 255, .1);
   color: var(--mist);
+  box-shadow: inset 0 0 0 1px var(--glass-border);
   cursor: default;
 }
 
 .btn-ghost {
-  background: transparent;
+  background: rgba(255, 255, 255, .06);
   color: var(--snow);
-  border: 2px solid var(--steel);
+  border: 1px solid rgba(255, 255, 255, .4);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
 }
-.btn-ghost:active { background: var(--violet); }
+.btn-ghost:active { background: rgba(47, 123, 170, .35); }
 
 .btn-xl {
   min-height: clamp(84px, 12vh, 112px);
@@ -237,7 +261,7 @@ main { position: relative; z-index: 1; }
 
 .title {
   margin: 0;
-  font-weight: 700;
+  font-weight: 500;
   font-size: clamp(64px, 9vw, 124px);
   line-height: 1.15;
   color: var(--snow);
@@ -348,8 +372,8 @@ main { position: relative; z-index: 1; }
   border-radius: 50%;
   display: grid;
   place-items: center;
-  font-family: var(--en);
-  font-weight: 800;
+  font-family: var(--num);
+  font-weight: 400;
   font-size: 20px;
   color: var(--ink);
   background: var(--mist);
@@ -366,18 +390,20 @@ main { position: relative; z-index: 1; }
   flex-direction: column;
   align-items: center;
   padding: clamp(8px, 1.4vh, 16px) 20px clamp(10px, 1.6vh, 18px);
-  border-radius: 32px;
-  background: var(--navy);
-  border: 2px solid var(--violet);
+  border-radius: 24px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  -webkit-backdrop-filter: blur(14px) saturate(1.1);
+  backdrop-filter: blur(14px) saturate(1.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25);
   transition: border-color .3s;
 }
 .readout-label { font-size: clamp(17px, 1.7vw, 21px); color: var(--mist); }
 .readout-num {
-  font-family: var(--en);
-  font-weight: 800;
+  font-family: var(--num);
+  font-weight: 400;
   font-size: clamp(64px, 11vh, 108px);
   line-height: 1.05;
-  letter-spacing: .02em;
   color: var(--snow);
   min-height: 1.05em;
 }
@@ -388,7 +414,7 @@ main { position: relative; z-index: 1; }
 }
 .readout.valid { border-color: var(--mist); }
 .readout.invalid { border-color: var(--lilac); }
-.readout.invalid .readout-hint { color: var(--lilac); font-weight: 700; }
+.readout.invalid .readout-hint { color: var(--lilac); font-weight: 500; }
 .readout.shake { animation: shake .42s var(--ease); }
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
@@ -406,20 +432,22 @@ main { position: relative; z-index: 1; }
 .key {
   height: clamp(58px, 8.4vh, 86px);
   border-radius: 24px;
-  border: 2px solid var(--violet);
-  background: var(--navy);
-  font-family: var(--en);
-  font-weight: 600;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  font-family: var(--num);
+  font-weight: 400;
   font-size: clamp(30px, 4.4vh, 42px);
   color: var(--snow);
   cursor: pointer;
   transition: transform .12s var(--ease), background-color .2s, border-color .2s;
 }
-.key:active { transform: scale(.94); background: var(--violet); border-color: var(--mist); }
+.key:active { transform: scale(.94); background: rgba(47, 123, 170, .45); border-color: var(--brand-cyan); }
 .key-fn {
   font-family: var(--ar);
   font-size: clamp(20px, 2.8vh, 26px);
-  font-weight: 700;
+  font-weight: 500;
   color: var(--mist);
   background: transparent;
 }
@@ -444,7 +472,7 @@ main { position: relative; z-index: 1; }
   font-size: clamp(20px, 2.2vw, 28px);
   color: var(--mist);
 }
-.draw-bpm .num { font-weight: 800; color: var(--snow); font-size: 1.3em; }
+.draw-bpm .num { font-weight: 400; color: var(--snow); font-size: 1.3em; }
 
 .stage {
   position: relative;
@@ -481,13 +509,13 @@ main { position: relative; z-index: 1; }
 .status.fade { opacity: 0; }
 
 /* ---------- ٤. اللوحة ----------
-   عمودين ثابتين: اللوحة 70% والبطاقة 30% — ما يتداخلون على أي مقاس */
+   عمودين ثابتين: اللوحة 65% والبطاقة 35% — ما يتداخلون على أي مقاس */
 .result {
   width: 100%;
   height: 100%;
   max-width: 1320px;
   display: grid;
-  grid-template-columns: minmax(0, 7fr) minmax(0, 3fr);
+  grid-template-columns: minmax(0, 6.5fr) minmax(0, 3.5fr);
   grid-template-rows: minmax(0, 1fr);
   column-gap: clamp(24px, 3.6vw, 48px);
   align-items: center;
@@ -538,22 +566,29 @@ main { position: relative; z-index: 1; }
 .card {
   min-height: 0;
   padding: clamp(14px, 2.4vh, 26px) clamp(14px, 9cqi, 28px);
-  border-radius: 32px;
-  background: var(--navy);
-  border: 2px solid var(--violet);
+  border-radius: 24px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  -webkit-backdrop-filter: blur(14px) saturate(1.1);
+  backdrop-filter: blur(14px) saturate(1.1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25), 0 16px 40px rgba(1, 20, 27, .18);
   display: flex;
   flex-direction: column;
   gap: clamp(4px, 1vh, 10px);
   overflow: hidden;
 }
-.card-logo {
-  height: clamp(24px, 3.6vh, 36px);
-  max-width: 100%;
-  width: auto;
-  object-fit: contain;
-  align-self: flex-start;
-  margin-bottom: clamp(2px, 0.8vh, 8px);
+/* الشعارين في البطاقة: نقلة + رواد (رواد مكدّس فنعطيه ارتفاع أكبر) */
+.card-logos {
+  --lh: clamp(30px, min(4.4vh, 18cqi), 50px);
+  display: flex;
+  align-items: center;
+  gap: clamp(12px, 6cqi, 20px);
+  margin-bottom: 0;
 }
+.card-logos img { width: auto; display: block; object-fit: contain; }
+.card-logos .l-naqla { height: calc(var(--lh) * .56); }
+.card-logos .l-rowad { height: var(--lh); }
+.card-logos .sep { width: 1px; align-self: stretch; margin-block: 10%; background: rgba(192, 201, 206, .45); }
 .card-pulse {
   margin: 0;
   display: flex;
@@ -561,12 +596,12 @@ main { position: relative; z-index: 1; }
   align-items: baseline;
   column-gap: 12px;
   font-size: clamp(18px, 8cqi, 28px);
-  font-weight: 700;
+  font-weight: 500;
   color: var(--lilac);
 }
 .card-pulse .num {
   font-size: clamp(44px, min(24cqi, 9vh), 80px);
-  font-weight: 800;
+  font-weight: 400;
   line-height: 1;
   color: var(--snow);
 }
@@ -574,13 +609,13 @@ main { position: relative; z-index: 1; }
   margin: 0;
   font-size: clamp(24px, min(13cqi, 5.4vh), 42px);
   line-height: 1.35;
-  font-weight: 700;
+  font-weight: 500;
   color: var(--snow);
 }
 .card-poem {
   margin: 0;
   font-size: clamp(16px, min(7.4cqi, 2.8vh), 23px);
-  line-height: 1.6;
+  line-height: 1.5;
   color: var(--lilac);
 }
 .card-line {
@@ -591,14 +626,14 @@ main { position: relative; z-index: 1; }
   opacity: .85;
 }
 .qr {
-  margin-top: clamp(4px, 1.2vh, 12px);
+  margin-top: clamp(2px, 0.6vh, 12px);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
 }
 .qr-code {
-  width: min(100%, 21vh, 190px);
+  width: min(100%, 19vh, 190px);
   aspect-ratio: 1;
   border-radius: 16px;
   overflow: hidden;
@@ -637,13 +672,19 @@ main { position: relative; z-index: 1; }
   background: var(--lilac);
   color: var(--ink);
   font-size: 20px;
-  font-weight: 700;
+  font-weight: 500;
   opacity: 0;
   pointer-events: none;
   z-index: 10;
   transition: opacity .3s, translate .4s var(--ease);
 }
 .toast.show { opacity: 1; translate: -50% 0; }
+
+/* ---------- آيباد 9.7 إنش (768px ارتفاع): البطاقة أضيق شوي ---------- */
+@media (max-height: 790px) {
+  .qr-code { width: min(100%, 16.5vh, 190px); }
+  .card-logos { --lh: 30px; }
+}
 
 /* ---------- آيباد بوضع أصغر ---------- */
 @media (max-height: 700px) {
@@ -656,7 +697,6 @@ main { position: relative; z-index: 1; }
 @media (prefers-reduced-motion: reduce) {
   :root { --t-screen: .25s; }
   .screen { transform: none; }
-  .deco g,
   .welcome-mark .ring,
   .welcome-mark .core,
   .art-frame.alive canvas,

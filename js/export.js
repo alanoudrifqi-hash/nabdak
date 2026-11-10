@@ -4,35 +4,38 @@ window.Nabdak = window.Nabdak || {};
   'use strict';
 
   const W = 1200, H = 1800;
+  // ألوان نقلة الست
   const C = {
-    ink: '#020624', navy: '#0f1543', plum: '#2f2447', violet: '#4a3b68',
-    steel: '#58709c', mist: '#b7cddd', lilac: '#d4dafa', snow: '#f6f9fc'
+    deep: '#01141B', ink: '#012535', blue: '#2F7BAA',
+    silver: '#C0C9CE', paper: '#F4F5F4', cyan: '#7ECEEC'
   };
-  const AR = '"Noto Naskh Arabic", "Urbanist", serif';
-  const EN = '"Urbanist", "Noto Naskh Arabic", sans-serif';
+  const AR = '"Thmanyah", Tahoma, sans-serif';
+  const EN = '"Thmanyah", Arial, sans-serif';
+  const NUM = 'Arial, Helvetica, sans-serif';
 
-  let logoPromise = null;
-  function loadLogo() {
-    // نسخة مضمّنة من assets/brand/logo.png حتى ما تتلوث اللوحة لو فُتحت من ملف محلي
-    if (!logoPromise) {
-      logoPromise = new Promise(resolve => {
+  // نسخ مضمّنة من الشعارين (assets/brand/logo-data.js) حتى ما تتلوث اللوحة لو فُتحت من ملف محلي
+  const logoPromises = {};
+  function loadImg(key, data, file) {
+    if (!logoPromises[key]) {
+      logoPromises[key] = new Promise(resolve => {
         const img = new Image();
         img.onload = () => resolve(img);
         img.onerror = () => resolve(null);
-        img.src = window.NABDAK_LOGO_DATA || 'assets/brand/logo.png';
+        img.src = data || file;
       });
     }
-    return logoPromise;
+    return logoPromises[key];
   }
+  const loadRowad = () => loadImg('rowad', window.NABDAK_LOGO_DATA, 'assets/brand/rowad-white.png');
+  const loadNaqla = () => loadImg('naqla', window.NABDAK_NAQLA_DATA, 'assets/brand/naqla-white.png');
 
   async function ensureFonts() {
     if (!document.fonts || !document.fonts.load) return;
     try {
       await Promise.all([
-        document.fonts.load(`700 60px ${AR}`, 'نبضي اليوم'),
+        document.fonts.load(`500 60px ${AR}`, 'نبضي اليوم'),
         document.fonts.load(`400 40px ${AR}`, 'تجربة'),
-        document.fonts.load(`800 140px ${EN}`, '0123456789'),
-        document.fonts.load(`600 26px ${EN}`, 'Human & Impact')
+        document.fonts.load(`500 26px ${EN}`, 'Human & Impact')
       ]);
     } catch (e) { /* يكمل بالخط الاحتياطي */ }
   }
@@ -63,22 +66,39 @@ window.Nabdak = window.Nabdak || {};
   async function buildCard({ scene, bpm, mood, time }) {
     await ensureFonts();
     if (N.Scene && N.Scene.preload) await N.Scene.preload();
-    const logo = await loadLogo();
+    const [rowad, naqla] = await Promise.all([loadRowad(), loadNaqla()]);
     const cv = document.createElement('canvas');
     cv.width = W; cv.height = H;
     const ctx = cv.getContext('2d');
 
-    // الخلفية
-    const g = ctx.createLinearGradient(0, 0, W * 0.3, H);
-    g.addColorStop(0, C.plum);
-    g.addColorStop(1, C.navy);
-    ctx.fillStyle = g;
+    // الخلفية: عمق نقلة مع توهج أزرق هادئ
+    ctx.fillStyle = C.deep;
+    ctx.fillRect(0, 0, W, H);
+    const glow = ctx.createRadialGradient(W * 0.2, H * 0.12, 0, W * 0.2, H * 0.12, W * 1.1);
+    glow.addColorStop(0, 'rgba(47,123,170,0.55)');
+    glow.addColorStop(1, 'rgba(47,123,170,0)');
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, W, H);
+    const low = ctx.createLinearGradient(0, H * 0.55, 0, H);
+    low.addColorStop(0, 'rgba(1,37,53,0)');
+    low.addColorStop(1, 'rgba(1,37,53,0.9)');
+    ctx.fillStyle = low;
     ctx.fillRect(0, 0, W, H);
 
-    // الشعار — بدون أي تعديل
-    if (logo) {
-      const lh = 66, lw = lh * logo.naturalWidth / logo.naturalHeight;
-      ctx.drawImage(logo, (W - lw) / 2, 64, lw, lh);
+    // الشعارين — بدون أي تعديل على النسب: نقلة يمين، رواد يسار، وبينهم خط فضي
+    {
+      const rh = 120, nh = 66, gapL = 48, cy = 98;
+      const rw = rowad ? rh * rowad.naturalWidth / rowad.naturalHeight : 0;
+      const nw = naqla ? nh * naqla.naturalWidth / naqla.naturalHeight : 0;
+      const total = rw + nw + (rowad && naqla ? gapL * 2 : 0);
+      let x = (W - total) / 2;
+      if (rowad) { ctx.drawImage(rowad, x, cy - rh / 2, rw, rh); x += rw; }
+      if (rowad && naqla) {
+        ctx.fillStyle = 'rgba(192,201,206,0.45)';
+        ctx.fillRect(x + gapL - 1, cy - 34, 2, 68);
+        x += gapL * 2;
+      }
+      if (naqla) ctx.drawImage(naqla, x, cy - nh / 2, nw, nh);
     }
 
     // اللوحة — تُرسم من جديد بحالتها المكتملة وبدقة الطباعة
@@ -97,9 +117,9 @@ window.Nabdak = window.Nabdak || {};
     // «نبضي اليوم 78»
     ctx.textBaseline = 'alphabetic';
     const label = 'نبضي اليوم';
-    ctx.font = `700 56px ${AR}`;
+    ctx.font = `500 56px ${AR}`;
     const wLabel = ctx.measureText(label).width;
-    ctx.font = `800 140px ${EN}`;
+    ctx.font = `400 140px ${NUM}`;
     const num = String(bpm);
     const wNum = ctx.measureText(num).width;
     const gap = 26;
@@ -107,36 +127,36 @@ window.Nabdak = window.Nabdak || {};
     const right = cx + total / 2;
     const baseY = 1368;
     ctx.direction = 'rtl'; ctx.textAlign = 'right';
-    ctx.font = `700 56px ${AR}`;
-    ctx.fillStyle = C.lilac;
+    ctx.font = `500 56px ${AR}`;
+    ctx.fillStyle = C.cyan;
     ctx.fillText(label, right, baseY);
     ctx.direction = 'ltr'; ctx.textAlign = 'right';
-    ctx.font = `800 140px ${EN}`;
-    ctx.fillStyle = C.snow;
+    ctx.font = `400 140px ${NUM}`;
+    ctx.fillStyle = C.paper;
     ctx.fillText(num, right - wLabel - gap, baseY);
 
     // اسم اللوحة
     ctx.direction = 'rtl'; ctx.textAlign = 'center';
-    ctx.font = `700 78px ${AR}`;
-    ctx.fillStyle = C.snow;
+    ctx.font = `500 78px ${AR}`;
+    ctx.fillStyle = C.paper;
     ctx.fillText(mood.name, cx, 1476);
 
     // الجملة الشعرية وسطر الشرح (يتغيرون حسب المشهد)
     ctx.font = `400 46px ${AR}`;
-    ctx.fillStyle = C.lilac;
+    ctx.fillStyle = C.cyan;
     wrap(ctx, mood.poem, 1000).slice(0, 1).forEach(ln => ctx.fillText(ln, cx, 1556));
     ctx.font = `400 34px ${AR}`;
-    ctx.fillStyle = C.mist;
+    ctx.fillStyle = C.silver;
     wrap(ctx, mood.line, 1000).slice(0, 2).forEach((ln, i) => ctx.fillText(ln, cx, 1626 + i * 50));
 
     // التذييل
     ctx.direction = 'rtl'; ctx.textAlign = 'center';
     ctx.font = `400 28px ${AR}`;
-    ctx.fillStyle = C.mist;
+    ctx.fillStyle = C.silver;
     ctx.fillText('تجربة توعوية وليست تشخيصًا', cx, H - 60);
     ctx.direction = 'ltr';
-    ctx.font = `600 22px ${EN}`;
-    ctx.fillStyle = C.steel;
+    ctx.font = `500 22px ${EN}`;
+    ctx.fillStyle = C.blue;
     ctx.fillText('HUMAN & IMPACT', cx, H - 22);
 
     return cv;

@@ -11,9 +11,16 @@ window.Nabdak = window.Nabdak || {};
 (function (N) {
   'use strict';
 
+  // ألوان هوية نقلة (نفس أسماء الأدوار القديمة عشان الرسم ما يتغير)
   const P = {
-    ink: '#020624', navy: '#0f1543', plum: '#2f2447', violet: '#4a3b68',
-    steel: '#58709c', mist: '#b7cddd', lilac: '#d4dafa', snow: '#f6f9fc'
+    ink: '#01141B',    // deep
+    navy: '#012535',   // ink
+    plum: '#062F45',   // ink ↔ blue (درجة وسيطة للتدرجات)
+    violet: '#1A587F', // درجة أغمق من الأزرق
+    steel: '#2F7BAA',  // blue
+    mist: '#C0C9CE',   // silver
+    lilac: '#7ECEEC',  // cyan
+    snow: '#F4F5F4'    // paper
   };
   const TAU = Math.PI * 2;
 

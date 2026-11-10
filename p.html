@@ -3,23 +3,29 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#0f1543">
+  <meta name="theme-color" content="#01141B">
   <meta name="format-detection" content="telephone=no">
   <title>لوحة نبضك</title>
-  <link rel="icon" href="assets/brand/emblem.png">
+  <link rel="icon" type="image/png" href="assets/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
   <link rel="stylesheet" href="css/fonts.css">
   <style>
     :root {
-      --ink:#020624; --navy:#0f1543; --plum:#2f2447; --violet:#4a3b68;
-      --steel:#58709c; --mist:#b7cddd; --lilac:#d4dafa; --snow:#f6f9fc;
-      --ar:"Noto Naskh Arabic","Urbanist",serif; --en:"Urbanist","Noto Naskh Arabic",sans-serif;
+      /* هوية نقلة */
+      --ink:#01141B; --navy:#012535; --steel:#2F7BAA; --mist:#C0C9CE; --lilac:#7ECEEC; --snow:#F4F5F4;
+      --glass-bg:rgba(255,255,255,.08); --glass-border:rgba(255,255,255,.22);
+      --ar:"Thmanyah",Tahoma,sans-serif; --num:Arial,Helvetica,sans-serif;
       --beat:.77s;
     }
     * { box-sizing:border-box; }
     html, body { margin:0; min-height:100%; }
     body {
-      background: linear-gradient(160deg, var(--plum), var(--navy)) fixed;
-      background-color: var(--navy);
+      background:
+        radial-gradient(ellipse 120% 60% at 15% 0%, rgba(47,123,170,.55), transparent 65%),
+        radial-gradient(ellipse 90% 50% at 100% 100%, rgba(126,206,236,.18), transparent 60%),
+        var(--ink) fixed;
+      background-color: var(--ink);
+      font-synthesis: none;
       color: var(--snow);
       font-family: var(--ar);
       -webkit-text-size-adjust: 100%;
@@ -29,7 +35,11 @@
       padding: max(20px, env(safe-area-inset-top)) 16px max(20px, env(safe-area-inset-bottom));
       display: flex; flex-direction: column; gap: 18px;
     }
-    .logo { height: 34px; width: auto; align-self: center; }
+    .logos { display:flex; align-items:center; justify-content:center; gap:22px; }
+    .logos img { width:auto; display:block; object-fit:contain; }
+    .logos .l-naqla { height: 34px; }
+    .logos .l-rowad { height: 60px; }
+    .logos .sep { width:1px; height:36px; background:rgba(192,201,206,.45); }
     .frame {
       width: 100%; aspect-ratio: 1; border-radius: 28px; overflow: hidden;
       box-shadow: 0 24px 60px -24px var(--ink); transform: translateZ(0); background: var(--navy);
@@ -38,17 +48,19 @@
     .frame.alive canvas { animation: heartbeat var(--beat) ease-out infinite; }
     @keyframes heartbeat { 0%,100%{transform:scale(1)} 14%{transform:scale(1.03)} 45%{transform:scale(1)} }
     .card {
-      padding: 20px 22px; border-radius: 28px; background: var(--navy); border: 2px solid var(--violet);
+      padding: 20px 22px; border-radius: 24px; background: var(--glass-bg); border: 1px solid var(--glass-border);
+      -webkit-backdrop-filter: blur(14px) saturate(1.1); backdrop-filter: blur(14px) saturate(1.1);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.25);
       display:flex; flex-direction:column; gap:6px;
     }
-    .pulse { margin:0; display:flex; align-items:baseline; gap:12px; font-size:22px; font-weight:700; color:var(--lilac); }
-    .pulse .num { font-family:var(--en); font-size:60px; font-weight:800; line-height:1; color:var(--snow); }
-    h1 { margin:0; font-size:34px; line-height:1.35; }
+    .pulse { margin:0; display:flex; align-items:baseline; gap:12px; font-size:22px; font-weight:500; color:var(--lilac); }
+    .pulse .num { font-family:var(--num); font-size:60px; font-weight:400; line-height:1; color:var(--snow); direction:ltr; }
+    h1 { margin:0; font-size:34px; line-height:1.35; font-weight:500; }
     .poem { margin:0; font-size:20px; line-height:1.6; color:var(--lilac); }
     .line { margin:0; font-size:16px; line-height:1.6; color:var(--mist); }
     .btn {
-      min-height: 60px; border:0; border-radius:999px; background:var(--lilac); color:var(--ink);
-      font-family:var(--ar); font-size:22px; font-weight:700; cursor:pointer;
+      min-height: 60px; border:0; border-radius:999px; background:var(--snow); color:var(--navy);
+      font-family:var(--ar); font-size:22px; font-weight:500; cursor:pointer; touch-action:manipulation;
     }
     .btn:disabled { opacity:.7; }
     .note { margin:0; text-align:center; font-size:14px; color:var(--mist); }
@@ -58,7 +70,7 @@
 </head>
 <body>
   <main class="wrap" id="app">
-    <img class="logo" src="assets/brand/logo.png" alt="رواد الذكاء الاصطناعي">
+    <div class="logos"><img class="l-naqla" src="assets/brand/naqla-white.svg" alt="نقلة"><span class="sep" aria-hidden="true"></span><img class="l-rowad" src="assets/brand/rowad-white.png" alt="رواد الذكاء الاصطناعي"></div>
     <div class="frame" id="frame" role="img" aria-label="لوحة جبال الطائف المرسومة من نبضك"></div>
     <article class="card">
       <p class="pulse">نبضي اليوم <bdi class="num" id="bpm"></bdi></p>
@@ -82,7 +94,7 @@
     const bpm = m ? Number(m[1]) : NaN;
     if (!(bpm >= 40 && bpm <= 180)) {
       document.getElementById('app').innerHTML =
-        '<img class="logo" src="assets/brand/logo.png" alt="رواد الذكاء الاصطناعي"><p class="err">ما لقينا اللوحة، صوّر الرمز مرة ثانية</p>';
+        '<div class="logos"><img class="l-naqla" src="assets/brand/naqla-white.svg" alt="نقلة"><span class="sep" aria-hidden="true"></span><img class="l-rowad" src="assets/brand/rowad-white.png" alt="رواد الذكاء الاصطناعي"></div><p class="err">ما لقينا اللوحة، صوّر الرمز مرة ثانية</p>';
       return;
     }
     const seed = parseInt(m[2], 36) >>> 0;
